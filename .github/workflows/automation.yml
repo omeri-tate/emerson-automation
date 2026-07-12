@@ -1,0 +1,35 @@
+name: Emerson Activity Automation
+
+on:
+  schedule:
+    # Friday 8 AM Israel time (6 AM UTC)
+    - cron: '0 6 * * 5'
+    # Sunday 4 PM El Salvador time (22 UTC Saturday)
+    - cron: '0 22 * * 6'
+    # Every hour for board monitoring
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install apscheduler google-api-python-client google-auth-oauthlib google-auth-httplib2 requests pytz
+      
+      - name: Run automation
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          MONDAY_API_TOKEN: ${{ secrets.MONDAY_API_TOKEN }}
+          EMERSON_EMAIL: ${{ secrets.EMERSON_EMAIL }}
+          YOUR_EMAIL: ${{ secrets.YOUR_EMAIL }}
+        run: python main.py
